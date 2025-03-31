@@ -1,4 +1,6 @@
-Here's a detailed implementation plan and complete scripts for creating a Cloudflare Worker that handles scheduling an AI agent to join a conference call using Bland.ai:
+# Ai Phone Agent
+
+This implementation creates a Cloudflare Worker that receives emails via Resend, parses calendar invites, and schedules a Bland.ai agent to join conference calls. The worker handles the entire process automatically, from receiving the email to scheduling the AI agent with specific instructions.
 
 ## Implementation Plan
 
@@ -163,6 +165,3 @@ wrangler publish
 ```bash
 npm test
 ```
-
-This implementation creates a Cloudflare Worker that receives emails via Resend, parses calendar invites, and schedules a Bland.ai agent to join conference calls. The worker handles the entire process automatically, from receiving the email to scheduling the AI agent with specific instructions[1][2][4][8].
- 
