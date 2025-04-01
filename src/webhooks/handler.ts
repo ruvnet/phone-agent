@@ -29,7 +29,7 @@ export async function processWebhook(
     const timestamp = headers[webhookConfig.resend.timestampHeader];
     
     // Verify the webhook signature
-    const signatureResult = verifyWebhookSignature(body, signature, timestamp);
+    const signatureResult = await verifyWebhookSignature(body, signature, timestamp);
     
     if (!signatureResult.isValid) {
       return {

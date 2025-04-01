@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  phone-agent:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: phone-agent
+    restart: unless-stopped
+    ports:
+      - "8787:8787"
+    volumes:
+      - ./public:/app/public
+    env_file:
+      - .env
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8787/api"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    networks:
+      - phone-agent-network
+
+networks:
+  phone-agent-network:
+    driver: bridge

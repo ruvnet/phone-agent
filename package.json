@@ -1,11 +1,13 @@
 {
-  "name": "resend-webhook-forwarder",
+  "name": "phone-agent",
   "version": "1.0.0",
-  "description": "A Cloudflare Pages application that receives webhooks from Resend, validates them, transforms the payload, and forwards them to a target webhook endpoint",
+  "description": "A Cloudflare Pages application that provides AI-powered phone agents for meetings and calls",
   "main": "dist/index.js",
   "scripts": {
     "dev": "wrangler pages dev public --compatibility-date=2023-06-01",
     "dev:local": "./dev.sh",
+    "dev:minimal": "node scripts/minimal-server.js",
+    "check": "node scripts/check-server.js",
     "build": "tsc",
     "test": "vitest run",
     "test:watch": "vitest",
@@ -27,8 +29,11 @@
     "pages",
     "functions",
     "webhook",
-    "resend",
-    "email"
+    "phone",
+    "agent",
+    "ai",
+    "calendar",
+    "meeting"
   ],
   "author": "",
   "license": "MIT",

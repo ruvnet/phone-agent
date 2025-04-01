@@ -55,18 +55,89 @@ if ! command -v npm &> /dev/null; then
   exit 1
 fi
 
-# Function to start the development server
-start_dev_server() {
-  print_info "Starting development server..."
+# Function to display usage information
+show_usage() {
+  echo "Usage: ./dev.sh [OPTIONS]"
+  echo ""
+  echo "Options:"
+  echo "  --help, -h       Show this help message"
+  echo "  --express, -e    Use Express server (default if available)"
+  echo "  --minimal, -m    Use minimal Node.js server"
+  echo "  --wrangler, -w   Try to use Wrangler (may have compatibility issues)"
+  echo ""
+  echo "Examples:"
+  echo "  ./dev.sh                 # Use the best available server"
+  echo "  ./dev.sh --minimal       # Force use of minimal server"
+  echo "  ./dev.sh --express       # Force use of Express server"
+  echo "  ./dev.sh --wrangler      # Try to use Wrangler"
+}
+
+# Parse command line arguments
+SERVER_TYPE=""
+
+while [[ $# -gt 0 ]]; do
+  case $1 in
+    --help|-h)
+      show_usage
+      exit 0
+      ;;
+    --express|-e)
+      SERVER_TYPE="express"
+      shift
+      ;;
+    --minimal|-m)
+      SERVER_TYPE="minimal"
+      shift
+      ;;
+    --wrangler|-w)
+      SERVER_TYPE="wrangler"
+      shift
+      ;;
+    *)
+      print_error "Unknown option: $1"
+      show_usage
+      exit 1
+      ;;
+  esac
+done
+
+# Function to start the minimal development server
+start_minimal_server() {
+  print_info "Starting minimal Node.js development server..."
   
-  # Check if we have a custom dev server script
+  if [ -f scripts/minimal-server.js ]; then
+    print_info "Using minimal server from scripts/minimal-server.js"
+    node scripts/minimal-server.js
+  else
+    print_error "Minimal server script not found at scripts/minimal-server.js"
+    exit 1
+  fi
+}
+
+# Function to start the Express development server
+start_express_server() {
+  print_info "Starting Express development server..."
+  
   if [ -f scripts/dev-server.js ]; then
-    print_info "Using custom dev server from scripts/dev-server.js"
+    print_info "Using Express server from scripts/dev-server.js"
     node scripts/dev-server.js
   else
-    # If no custom server, use a simple static file server
-    print_info "Using simple static file server for public directory"
-    npx serve public
+    print_error "Express server script not found at scripts/dev-server.js"
+    exit 1
+  fi
+}
+
+# Function to start Wrangler development server
+start_wrangler_server() {
+  print_info "Attempting to start Wrangler development server..."
+  
+  if npx wrangler --version &> /dev/null; then
+    print_info "Wrangler is available, starting Pages development server"
+    npx wrangler pages dev public --compatibility-date=2023-06-01
+  else
+    print_error "Wrangler is not available or has compatibility issues"
+    print_warning "Falling back to Express server"
+    start_express_server
   fi
 }
 
@@ -79,82 +150,25 @@ build_project() {
 # Check if functions directory exists
 if [ -d functions ]; then
   print_info "Functions directory detected. Setting up API handlers..."
-  
-  # Create a simple Express server to handle API requests if not using Wrangler
-  if [ ! -f scripts/dev-server.js ]; then
-    print_info "Creating temporary Express server for API functions"
-    
-    # Create a temporary server file
-    cat > temp-server.js << 'EOF'
-const express = require('express');
-const path = require('path');
-const fs = require('fs');
-const app = express();
-const port = process.env.PORT || 8787;
+fi
 
-// Serve static files from public directory
-app.use(express.static('public'));
-app.use(express.json());
-
-// Load API functions
-const functionsDir = path.join(__dirname, 'functions/api');
-if (fs.existsSync(functionsDir)) {
-  fs.readdirSync(functionsDir).forEach(file => {
-    if (file.endsWith('.js')) {
-      const functionName = file.replace('.js', '');
-      const functionPath = path.join(functionsDir, file);
-      try {
-        const functionModule = require(functionPath);
-        if (typeof functionModule.onRequest === 'function') {
-          app.all(`/api/${functionName === 'index' ? '' : functionName}*`, async (req, res) => {
-            try {
-              // Create a context object similar to what Cloudflare Pages provides
-              const context = {
-                request: new Request(`http://${req.headers.host}${req.url}`, {
-                  method: req.method,
-                  headers: req.headers,
-                  body: req.method !== 'GET' && req.method !== 'HEAD' ? JSON.stringify(req.body) : undefined
-                }),
-                env: process.env,
-                params: req.params
-              };
-              
-              const response = await functionModule.onRequest(context);
-              
-              // Send the response
-              res.status(response.status || 200);
-              for (const [key, value] of response.headers.entries()) {
-                res.setHeader(key, value);
-              }
-              
-              const responseText = await response.text();
-              res.send(responseText);
-            } catch (error) {
-              console.error(`Error in API function ${functionName}:`, error);
-              res.status(500).json({ error: 'Internal Server Error' });
-            }
-          });
-          console.log(`Registered API endpoint: /api/${functionName === 'index' ? '' : functionName}`);
-        }
-      } catch (error) {
-        console.error(`Failed to load API function ${functionName}:`, error);
-      }
-    }
-  });
-}
-
-app.listen(port, () => {
-  console.log(`Server running at http://localhost:${port}`);
-  console.log(`Press Ctrl+C to stop the server`);
-});
-EOF
-    
-    print_info "Starting Express server for local development"
-    node temp-server.js
-  else
-    start_dev_server
-  fi
+# Determine which server to start based on command line arguments or availability
+if [ "$SERVER_TYPE" = "minimal" ]; then
+  start_minimal_server
+elif [ "$SERVER_TYPE" = "express" ]; then
+  start_express_server
+elif [ "$SERVER_TYPE" = "wrangler" ]; then
+  start_wrangler_server
 else
-  # No functions directory, just start the dev server
-  start_dev_server
+  # Auto-detect best server to use
+  if [ -f scripts/minimal-server.js ]; then
+    print_info "Minimal server detected, using it for maximum compatibility"
+    start_minimal_server
+  elif [ -f scripts/dev-server.js ]; then
+    print_info "Express server detected, using it for better feature support"
+    start_express_server
+  else
+    print_info "No custom server scripts found, attempting to use Wrangler"
+    start_wrangler_server
+  fi
 fi

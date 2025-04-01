@@ -53,6 +53,10 @@ Email Events      Process Webhooks         Schedule Calls
 │   ├── integration/          # Integration tests
 │   ├── services/             # Service tests
 │   └── ...                   # Other tests
+├── scripts/                  # Development and deployment scripts
+│   ├── dev-server.js         # Custom development server
+│   ├── minimal-server.js     # Minimal development server
+│   └── ...                   # Other scripts
 ├── _routes.json              # Cloudflare Pages routing configuration
 └── package.json              # Project configuration
 ```
@@ -101,7 +105,7 @@ npm install
 
 ### Running Locally
 
-There are two ways to run the application locally:
+There are three ways to run the application locally:
 
 #### Option 1: Using Wrangler (Standard Method)
 
@@ -122,6 +126,38 @@ npm run dev:local
 ```
 
 This will start a local Express server at http://localhost:8787 that mimics the Cloudflare Pages environment.
+
+#### Option 3: Using Minimal Development Server (Most Compatible)
+
+For environments with dependency issues or compatibility problems, use our minimal server that relies only on Node.js built-in modules:
+
+```bash
+npm run dev:minimal
+```
+
+This will start a lightweight HTTP server at http://localhost:8787 with mock API endpoints.
+
+### Testing the API
+
+You can test the API endpoints using curl:
+
+```bash
+# Get API information
+curl http://localhost:8787/api
+
+# Get schedule information
+curl http://localhost:8787/api/schedule?requestId=test123
+
+# Test webhook endpoint
+curl -X POST -H "Content-Type: application/json" \
+  -d '{"sender":"test@example.com","subject":"Test Webhook","body":"This is a test"}' \
+  http://localhost:8787/api/webhook
+
+# Cancel a scheduled call
+curl -X POST -H "Content-Type: application/json" \
+  -d '{"requestId":"test123","reason":"Testing cancellation"}' \
+  http://localhost:8787/api/schedule/cancel
+```
 
 ### Testing
 
@@ -178,6 +214,29 @@ npm run deploy
 3. Configure a webhook endpoint pointing to your application (e.g., `https://your-app.pages.dev/api/webhook`).
 4. Select the call events you want to receive.
 5. Save the webhook configuration.
+
+## Troubleshooting
+
+### Common Issues
+
+#### Wrangler Compatibility Issues
+
+If you encounter GLIBC compatibility issues with Wrangler, try using one of our alternative development servers:
+
+```bash
+# Option 1: Custom Express server
+npm run dev:local
+
+# Option 2: Minimal Node.js server
+npm run dev:minimal
+```
+
+#### API Endpoint Not Found
+
+If you receive a "Cannot GET /api" error, make sure you're using the correct server and port. The API endpoints are available at:
+
+- http://localhost:8787/api (for dev:local and dev:minimal)
+- http://localhost:8788/api (for standard Wrangler dev)
 
 ## License
 
