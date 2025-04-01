@@ -60,6 +60,41 @@ vi.mock('../../src/utils/config', () => {
   };
 });
 
+// Mock storage service
+vi.mock('../../src/services/storage-service', () => {
+  return {
+    storageService: {
+      getCallData: vi.fn().mockResolvedValue({
+        callId: 'mock-call-id',
+        phoneNumber: '+15551234567',
+        scheduledTime: '2025-04-01T14:00:00Z',
+        status: 'scheduled',
+        createdAt: '2025-04-01T10:00:00Z',
+        updatedAt: '2025-04-01T10:00:00Z'
+      }),
+      storeCallData: vi.fn().mockResolvedValue(true)
+    }
+  };
+});
+
+// Mock email service
+vi.mock('../../src/services/email-service', () => {
+  return {
+    emailService: {
+      sendCallNotification: vi.fn().mockResolvedValue(true)
+    }
+  };
+});
+
+// Mock calendar service
+vi.mock('../../src/services/calendar-service', () => {
+  return {
+    calendarService: {
+      addCallToCalendar: vi.fn().mockResolvedValue('calendar-event-id')
+    }
+  };
+});
+
 describe('BlandAiService', () => {
   let blandAiService: BlandAiService;
   let mockAxiosInstance: any;

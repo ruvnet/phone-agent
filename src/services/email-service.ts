@@ -60,12 +60,30 @@ export class EmailService {
    * @param options Configuration options
    */
   constructor(options: EmailServiceConfig = {}) {
-    const defaultConfig = config.getEmailConfig();
+    // Get email config with fallback
+    const defaultConfig = config.getEmailConfig ? config.getEmailConfig() : {
+      apiKey: '',
+      senderEmail: 'system@aiphone.agent',
+      senderName: 'AI Phone Agent',
+      templatesDir: './templates/email'
+    };
     
-    this.apiKey = options.apiKey || defaultConfig.apiKey || '';
-    this.senderEmail = options.senderEmail || defaultConfig.senderEmail || 'system@aiphone.agent';
-    this.senderName = options.senderName || defaultConfig.senderName || 'AI Phone Agent';
-    this.templatesDir = options.templatesDir || './templates/email';
+    this.apiKey = options.apiKey || 
+                 (defaultConfig && defaultConfig.apiKey) || 
+                 config.get('RESEND_API_KEY', '');
+                 
+    this.senderEmail = options.senderEmail || 
+                      (defaultConfig && defaultConfig.senderEmail) || 
+                      config.get('SENDER_EMAIL', 'system@aiphone.agent');
+                      
+    this.senderName = options.senderName || 
+                     (defaultConfig && defaultConfig.senderName) || 
+                     config.get('SENDER_NAME', 'AI Phone Agent');
+                     
+    this.templatesDir = options.templatesDir || 
+                       (defaultConfig && defaultConfig.templatesDir) || 
+                       './templates/email';
+                       
     this.retryCount = options.retryCount || 3;
     this.retryDelay = options.retryDelay || 1000;
     

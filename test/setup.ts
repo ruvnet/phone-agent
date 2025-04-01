@@ -48,4 +48,14 @@ process.env = {
   TARGET_WEBHOOK_AUTH_TOKEN: 'test_auth_token',
   DEBUG_WEBHOOKS: 'false',
   STORE_FAILED_PAYLOADS: 'true',
+  RESEND_API_KEY: 'test-api-key',
+  SENDER_EMAIL: 'test@example.com',
+  SENDER_NAME: 'Test Sender',
+  DEFAULT_TIMEZONE: 'America/New_York',
+  BLAND_AI_API_KEY: 'test-bland-api-key',
+  BLAND_AI_WEBHOOK_SECRET: 'test-webhook-secret',
+  BLAND_AI_AGENT_ID: 'test-agent-id',
+  BLAND_AI_BASE_URL: 'https://api.bland.ai',
+  MAX_CALL_DURATION_MINUTES: '30',
+  DEFAULT_RETRY_COUNT: '2'
 };

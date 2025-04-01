@@ -56,22 +56,60 @@ vi.mock('../../src/services/bland-service', () => ({
   }
 }));
 
-vi.mock('../../src/services/storage-service', () => ({
-  storageService: {
-    storeCallData: vi.fn().mockResolvedValue(true),
-    getCallData: vi.fn().mockResolvedValue({
-      callId: 'mock-call-id',
-      status: 'scheduled',
-      scheduledTime: '2025-04-01T14:00:00Z',
-      duration: 60,
-      phoneNumber: '+15551234567',
-      recipientName: 'John Doe',
-      recipientEmail: 'john@example.com',
-      topic: 'Test Call'
-    }),
-    updateCallData: vi.fn().mockResolvedValue(true)
-  }
-}));
+vi.mock('../../src/services/storage-service', () => {
+  const mockCallData = {
+    callId: 'mock-call-id',
+    status: 'scheduled',
+    scheduledTime: '2025-04-01T14:00:00Z',
+    duration: 60,
+    phoneNumber: '+15551234567',
+    recipientName: 'John Doe',
+    recipientEmail: 'john@example.com',
+    topic: 'Test Call'
+  };
+  
+  return {
+    storageService: {
+      storeCallData: vi.fn().mockResolvedValue(true),
+      getCallData: vi.fn().mockImplementation((callId) => {
+        if (callId === 'mock-call-id') {
+          return Promise.resolve(mockCallData);
+        }
+        if (callId === 'non-existent-call') {
+          return Promise.resolve(null);
+        }
+        return Promise.resolve(mockCallData);
+      }),
+      updateCallData: vi.fn().mockResolvedValue(true)
+    }
+  };
+});
+
+// Mock config
+vi.mock('../../src/utils/config', () => {
+  return {
+    config: {
+      getEmailConfig: vi.fn().mockReturnValue({
+        senderEmail: 'test@example.com',
+        senderName: 'Test Sender',
+        apiKey: 'test-api-key',
+        templatesDir: './test/templates'
+      }),
+      getCalendarConfig: vi.fn().mockReturnValue({
+        timezone: 'America/New_York',
+        cacheDir: './test/cache'
+      }),
+      getBlandAiConfig: vi.fn().mockReturnValue({
+        apiKey: 'test-bland-api-key',
+        webhookSecret: 'test-webhook-secret',
+        agentId: 'test-agent-id',
+        baseUrl: 'https://api.bland.ai',
+        maxCallDuration: 30,
+        defaultRetryCount: 2
+      })
+    }
+  };
+});
 
 describe('Bland.ai Agent Scheduling Workflow', () => {
   beforeEach(() => {

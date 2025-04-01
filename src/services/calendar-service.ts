@@ -82,8 +82,13 @@ export class CalendarService {
    * @param options Configuration options
    */
   constructor(options: CalendarServiceConfig = {}) {
-    const calendarConfig = config.getCalendarConfig();
-    this.defaultTimezone = options.timezone || calendarConfig.timezone || 'UTC';
+    // Get calendar config with default fallback
+    const calendarConfig = config.getCalendarConfig ? config.getCalendarConfig() : { timezone: 'UTC' };
+    
+    // Set timezone with fallbacks
+    this.defaultTimezone = options.timezone || 
+                          (calendarConfig && calendarConfig.timezone) || 
+                          config.get('DEFAULT_TIMEZONE', 'UTC');
   }
 
   /**
@@ -308,8 +313,16 @@ export class CalendarService {
         recipientName,
         recipientEmail,
         agentName = 'AI Phone Agent',
-        agentEmail = config.getEmailConfig().senderEmail || 'system@aiphone.agent'
+        agentEmail
       } = callDetails;
+      
+      // Get email config with fallback
+      const emailConfig = config.getEmailConfig ? config.getEmailConfig() : { senderEmail: 'system@aiphone.agent' };
+      
+      // Use provided agent email or get from config with fallback
+      const senderEmail = agentEmail || 
+                         (emailConfig && emailConfig.senderEmail) || 
+                         config.get('SENDER_EMAIL', 'system@aiphone.agent');
       
       // Convert scheduledTime to Date if it's a string
       const startTime = scheduledTime instanceof Date 
@@ -331,7 +344,7 @@ export class CalendarService {
         end: endTime,
         organizer: {
           name: agentName,
-          email: agentEmail
+          email: senderEmail
         },
         attendees: [
           {
