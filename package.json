@@ -1,0 +1,49 @@
+{
+  "name": "resend-webhook-forwarder",
+  "version": "1.0.0",
+  "description": "A Cloudflare Pages application that receives webhooks from Resend, validates them, transforms the payload, and forwards them to a target webhook endpoint",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "wrangler pages dev --compatibility-date=2023-06-01",
+    "build": "tsc",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "deploy": "./scripts/deploy.sh",
+    "deploy:dev": "./scripts/deploy.sh -e dev",
+    "deploy:staging": "./scripts/deploy.sh -e staging",
+    "deploy:prod": "./scripts/deploy.sh -e prod",
+    "setup": "./scripts/setup-local.sh",
+    "setup:env": "./scripts/setup-env.sh",
+    "monitor": "./scripts/monitor.sh",
+    "logs": "./scripts/monitor.sh logs -t",
+    "status": "./scripts/monitor.sh status",
+    "format": "prettier --write '**/*.{js,ts,json,md}'",
+    "lint": "eslint src/**/*.ts"
+  },
+  "keywords": [
+    "cloudflare",
+    "pages",
+    "functions",
+    "webhook",
+    "resend",
+    "email"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "itty-router": "^3.0.12"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20230518.0",
+    "@types/node": "^18.16.3",
+    "@typescript-eslint/eslint-plugin": "^5.59.2",
+    "@typescript-eslint/parser": "^5.59.2",
+    "eslint": "^8.40.0",
+    "eslint-config-prettier": "^8.8.0",
+    "prettier": "^2.8.8",
+    "typescript": "^5.0.4",
+    "vitest": "^3.1.1",
+    "wrangler": "^3.0.0"
+  }
+}

@@ -1,167 +1,152 @@
-# Ai Phone Agent
+# Resend Webhook Forwarder
 
-This implementation creates a Cloudflare Worker that receives emails via Resend, parses calendar invites, and schedules a Bland.ai agent to join conference calls. The worker handles the entire process automatically, from receiving the email to scheduling the AI agent with specific instructions.
+A Cloudflare Pages application that receives webhooks from Resend, validates them, transforms the payload, and forwards them to a target webhook endpoint.
 
-## Implementation Plan
+## Architecture
 
-1. Set up a Cloudflare Worker project
-2. Create an email handling function using Resend API
-3. Implement calendar invite parsing
-4. Set up Bland.ai integration for the AI agent
-5. Create the main worker script
-6. Write unit tests using Jest
+This application follows a simplified architecture using Cloudflare Pages Functions:
 
-## Setup Instructions
+```
+┌─────────┐     ┌───────────────────┐     ┌─────────────────┐
+│ Resend  │────▶│ Cloudflare Pages  │────▶│ Target Webhook  │
+└─────────┘     └───────────────────┘     └─────────────────┘
+    │                    │                        │
+    │                    │                        │
+    ▼                    ▼                        ▼
+Email Events      Transform Payload       Process Payload
+                 Validate Signature
+                   Add Auth Token
+```
 
-1. Install Wrangler CLI:
+## Features
+
+- **Webhook Signature Validation**: Verifies the authenticity of incoming webhooks using HMAC signatures
+- **Payload Transformation**: Converts Resend webhook payloads into a standardized format
+- **Secure Forwarding**: Forwards transformed payloads to a target endpoint with authentication
+- **Retry Logic**: Implements exponential backoff for failed webhook deliveries
+- **Error Handling**: Comprehensive error handling and reporting
+- **Failed Webhook Storage**: Option to store failed webhooks for later processing
+
+## Project Structure
+
+```
+/
+├── functions/                # Pages Functions (serverless API endpoints)
+│   ├── api/                  # API endpoints
+│   │   ├── webhook.js        # Webhook handler
+│   │   └── index.js          # API info endpoint
+│   └── static.js             # Static file handler
+├── public/                   # Static assets
+├── src/
+│   ├── config/               # Configuration
+│   ├── types/                # TypeScript type definitions
+│   ├── utils/                # Utility functions
+│   └── webhooks/             # Webhook processing logic
+├── test/                     # Tests
+│   ├── webhooks/             # Webhook tests
+│   └── ...                   # Other tests
+├── _routes.json              # Cloudflare Pages routing configuration
+└── package.json              # Project configuration
+```
+
+## Environment Variables
+
+The application requires the following environment variables:
+
+- `WEBHOOK_SIGNING_SECRET`: The signing secret from Resend
+- `TARGET_WEBHOOK_URL`: The URL of your target webhook
+- `TARGET_WEBHOOK_AUTH_TOKEN`: The authentication token for your target webhook
+- `DEBUG_WEBHOOKS`: Set to "true" to enable debug logging (optional)
+- `STORE_FAILED_PAYLOADS`: Set to "true" to store failed webhook payloads (optional)
+
+## Development
+
+### Prerequisites
+
+- Node.js 18 or later
+- npm or yarn
+
+### Installation
+
+1. Clone the repository:
+
 ```bash
-npm install -g wrangler
+git clone https://github.com/yourusername/resend-webhook-forwarder.git
+cd resend-webhook-forwarder
 ```
 
-2. Create a new Worker project:
+2. Install dependencies:
+
 ```bash
-wrangler init agent-scheduler
-cd agent-scheduler
+npm install
 ```
 
-3. Install dependencies:
+3. Create a `.dev.vars` file with your environment variables:
+
+```
+WEBHOOK_SIGNING_SECRET=your_signing_secret
+TARGET_WEBHOOK_URL=https://your-target-webhook.com
+TARGET_WEBHOOK_AUTH_TOKEN=your_auth_token
+DEBUG_WEBHOOKS=true
+STORE_FAILED_PAYLOADS=true
+```
+
+### Running Locally
+
+Start the development server:
+
 ```bash
-npm install @resend/node ical.js @bland/sdk jest
+npm run dev
 ```
 
-4. Set up environment variables in `.dev.vars` file:
-```
-RESEND_API_KEY=your_resend_api_key
-BLAND_AI_API_KEY=your_bland_ai_api_key
-AGENT_EMAIL=agent@example.com
-```
+This will start a local server at http://localhost:8788.
 
-## Main Worker Script (index.js)
+### Testing
 
-```javascript
-import { Resend } from '@resend/node';
-import ICAL from 'ical.js';
-import { BlandAPI } from '@bland/sdk';
+Run the tests:
 
-const resend = new Resend(RESEND_API_KEY);
-const bland = new BlandAPI(BLAND_AI_API_KEY);
-
-export default {
-  async fetch(request, env, ctx) {
-    if (request.method === 'POST') {
-      const email = await request.json();
-      if (email.to === env.AGENT_EMAIL) {
-        const calendarEvent = parseCalendarInvite(email.attachments[0].content);
-        if (calendarEvent) {
-          await scheduleAgent(calendarEvent);
-          return new Response('Agent scheduled', { status: 200 });
-        }
-      }
-    }
-    return new Response('Not Found', { status: 404 });
-  },
-};
-
-function parseCalendarInvite(icsContent) {
-  const jcalData = ICAL.parse(icsContent);
-  const comp = new ICAL.Component(jcalData);
-  const vevent = comp.getFirstSubcomponent('vevent');
-  
-  if (vevent) {
-    const summary = vevent.getFirstPropertyValue('summary');
-    const dtstart = vevent.getFirstPropertyValue('dtstart');
-    const duration = vevent.getFirstPropertyValue('duration');
-    const description = vevent.getFirstPropertyValue('description');
-    
-    const conferenceDetails = description.match(/Dial-In: (.+)/);
-    const dialIn = conferenceDetails ? conferenceDetails[1] : null;
-
-    return {
-      summary,
-      startTime: dtstart.toJSDate(),
-      duration: duration.toSeconds(),
-      dialIn
-    };
-  }
-  return null;
-}
-
-async function scheduleAgent(calendarEvent) {
-  const { summary, startTime, duration, dialIn } = calendarEvent;
-  
-  const callInstructions = `
-    You are an AI assistant joining a conference call.
-    Stay silent unless directly addressed.
-    When asked a question, provide concise and helpful responses.
-    Do not interrupt other speakers.
-    Call summary: ${summary}
-  `;
-
-  await bland.scheduleCall({
-    phoneNumber: dialIn,
-    taskDescription: callInstructions,
-    scheduledTime: startTime.toISOString(),
-    maxDuration: duration
-  });
-}
-```
-
-## Unit Tests (index.test.js)
-
-```javascript
-import { unstable_dev } from 'wrangler';
-import { jest } from '@jest/globals';
-
-jest.mock('@resend/node');
-jest.mock('ical.js');
-jest.mock('@bland/sdk');
-
-describe('Agent Scheduler Worker', () => {
-  let worker;
-
-  beforeAll(async () => {
-    worker = await unstable_dev('index.js', {
-      experimental: { disableExperimentalWarning: true }
-    });
-  });
-
-  afterAll(async () => {
-    await worker.stop();
-  });
-
-  it('should schedule agent when receiving a valid calendar invite', async () => {
-    const mockEmail = {
-      to: 'agent@example.com',
-      attachments: [{ content: 'mock_ics_content' }]
-    };
-
-    const resp = await worker.fetch('/', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(mockEmail)
-    });
-
-    expect(resp.status).toBe(200);
-    expect(await resp.text()).toBe('Agent scheduled');
-  });
-
-  it('should return 404 for non-POST requests', async () => {
-    const resp = await worker.fetch('/');
-    expect(resp.status).toBe(404);
-  });
-});
-```
-
-## Additional Setup
-
-1. Configure Resend to forward emails to your Worker's URL.
-
-2. Deploy the worker:
-```bash
-wrangler publish
-```
-
-3. Run tests:
 ```bash
 npm test
 ```
+
+Run the tests with coverage:
+
+```bash
+npm run test:coverage
+```
+
+## Deployment
+
+### Deploying to Cloudflare Pages
+
+1. Log in to the Cloudflare dashboard and create a new Pages project.
+
+2. Connect your GitHub repository.
+
+3. Configure the build settings:
+   - Build command: `npm run build`
+   - Build output directory: `/`
+
+4. Add your environment variables in the Cloudflare dashboard.
+
+5. Deploy the application.
+
+Alternatively, you can deploy using the Wrangler CLI:
+
+```bash
+npm run deploy
+```
+
+## Setting Up Resend Webhooks
+
+1. Log in to your Resend account.
+2. Navigate to the Webhooks section.
+3. Click "Add Webhook".
+4. Enter the URL of your Cloudflare Pages application (e.g., `https://your-app.pages.dev/api/webhook`).
+5. Select the events you want to receive (e.g., `email.sent`, `email.delivered`, etc.).
+6. Save the webhook configuration.
+7. Copy the signing secret for use in your environment variables.
+
+## License
+
+MIT

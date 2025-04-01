@@ -1,0 +1,32 @@
+# Cloudflare Worker configuration for Resend webhook forwarder
+
+name = "resend-webhook-forwarder"
+main = "src/index.ts"
+compatibility_date = "2023-10-30"
+
+# Environment variables
+# These are placeholder values and should be set in the Cloudflare dashboard
+# or using wrangler secrets commands
+[vars]
+DEBUG_WEBHOOKS = "false"
+STORE_FAILED_PAYLOADS = "true"
+
+# Development environment
+[env.dev]
+# Use this for local development
+# wrangler dev --env dev
+
+# Staging environment
+[env.staging]
+# Use this for testing in a non-production environment
+# wrangler publish --env staging
+
+# Production environment
+[env.production]
+# Use this for the production deployment
+# wrangler publish --env production
+
+# Secrets (these need to be set using wrangler secret commands)
+# wrangler secret put WEBHOOK_SIGNING_SECRET --env production
+# wrangler secret put TARGET_WEBHOOK_URL --env production
+# wrangler secret put TARGET_WEBHOOK_AUTH_TOKEN --env production

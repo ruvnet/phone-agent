@@ -1,0 +1,8 @@
+{
+  "version": 1,
+  "routes": [
+    { "pattern": "/api/webhook", "script": "webhook" },
+    { "pattern": "/api/*", "script": "api" },
+    { "pattern": "*", "script": "static" }
+  ]
+}

@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Phone Agent</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
+  <link rel="stylesheet" href="/styles.css">
+  <script type="module" src="/src/index.js"></script>
+</head>
+<body>
+  <header>
+    <div class="container header-content">
+      <div class="logo">
+        <div class="logo-icon">
+          <div class="infinity"></div>
+        </div>
+        Phone Agent
+      </div>
+      <nav>
+        <ul>
+          <li><a href="#features">Features</a></li>
+          <li><a href="#use-cases">Use Cases</a></li>
+          <li><a href="#how-it-works">How It Works</a></li>
+          <li><a href="#api">API</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+  
+  <section class="hero">
+    <div class="container">
+      <div class="hero-content">
+        <h1>Intelligent Voice Agents for the Modern Workplace</h1>
+        <p class="hero-tagline">Transform your meetings with AI-powered call agents that listen, respond, and take action</p>
+        <div class="hero-features">
+          <div class="hero-feature">
+            <div class="hero-feature-icon">🔄</div>
+            <span>Seamless Calendar Integration</span>
+          </div>
+          <div class="hero-feature">
+            <div class="hero-feature-icon">⚡</div>
+            <span>Real-time Action Tracking</span>
+          </div>
+          <div class="hero-feature">
+            <div class="hero-feature-icon">🔗</div>
+            <span>Enterprise Tool Integration</span>
+          </div>
+        </div>
+        <div class="hero-cta">
+          <a href="#how-it-works" class="btn btn-primary">Get Started</a>
+          <a href="#use-cases" class="btn btn-secondary">Explore Use Cases</a>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="hero-visual-container">
+          <div class="hero-visual-element">
+            <div class="pulse-circle"></div>
+            <div class="waveform">
+              <div class="wave"></div>
+              <div class="wave"></div>
+              <div class="wave"></div>
+              <div class="wave"></div>
+              <div class="wave"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <section id="features" class="features">
+    <div class="container">
+      <div class="section-title">
+        <h2>Features</h2>
+        <p>Advanced capabilities for intelligent voice interactions</p>
+      </div>
+      
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="feature-icon">📅</div>
+          <h3>Calendar Integration</h3>
+          <p>Seamlessly connects with your existing calendar system for automatic scheduling and reminders</p>
+        </div>
+        
+        <div class="feature-card">
+          <div class="feature-icon">🤖</div>
+          <h3>AI Voice Agent</h3>
+          <p>Natural-sounding voice with contextual understanding and real-time response capabilities</p>
+        </div>
+        
+        <div class="feature-card">
+          <div class="feature-icon">🔄</div>
+          <h3>Tool Integration</h3>
+          <p>Access and manipulate external tools and data sources during calls for enhanced productivity</p>
+        </div>
+        
+        <div class="feature-card">
+          <div class="feature-icon">📊</div>
+          <h3>Analytics Dashboard</h3>
+          <p>Comprehensive insights into call performance, outcomes, and participant engagement</p>
+        </div>
+        
+        <div class="feature-card">
+          <div class="feature-icon">🔒</div>
+          <h3>Enterprise Security</h3>
+          <p>End-to-end encryption with role-based access controls and compliance certifications</p>
+        </div>
+        
+        <div class="feature-card">
+          <div class="feature-icon">🌐</div>
+          <h3>Multi-language Support</h3>
+          <p>Real-time translation and localization for global conference calls and meetings</p>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <section id="use-cases" class="use-cases">
+    <div class="container">
+      <div class="section-title">
+        <h2>Use Cases</h2>
+        <p>Real-world applications for interactive voice agents</p>
+      </div>
+      
+      <div class="use-case-tabs">
+        <div class="tab-nav">
+          <button class="tab-btn active" data-tab="conference">Conference Calls</button>
+          <button class="tab-btn" data-tab="actions">Action Items</button>
+          <button class="tab-btn" data-tab="tools">Tool Usage</button>
+        </div>
+        
+        <div class="tab-content">
+          <div class="tab-pane active" id="conference">
+            <div class="use-case-content">
+              <div class="use-case-image">
+                <div class="image-placeholder">
+                  <svg width="80" height="80" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M7 8C7 5.23858 9.23858 3 12 3C14.7614 3 17 5.23858 17 8C17 10.7614 14.7614 13 12 13C9.23858 13 7 10.7614 7 8Z" stroke="currentColor" stroke-width="2"/>
+                    <path d="M17 8C17 5.23858 19.2386 3 22 3V13C19.2386 13 17 10.7614 17 8Z" stroke="currentColor" stroke-width="2"/>
+                    <path d="M7 8C7 5.23858 4.76142 3 2 3V13C4.76142 13 7 10.7614 7 8Z" stroke="currentColor" stroke-width="2"/>
+                    <path d="M5 21C5 17.134 8.13401 14 12 14C15.866 14 19 17.134 19 21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  </svg>
+                </div>
+              </div>
+              <div class="use-case-details">
+                <h3>Intelligent Conference Participation</h3>
+                <p>Our AI agents can join conference calls as active participants, providing various services:</p>
+                <ul class="use-case-list">
+                  <li><strong>Meeting Facilitation:</strong> Guide discussions, manage time, and ensure all agenda items are covered</li>
+                  <li><strong>Real-time Transcription:</strong> Create accurate meeting notes with speaker identification</li>
+                  <li><strong>Information Retrieval:</strong> Answer questions by accessing company knowledge bases during the call</li>
+                  <li><strong>Consensus Building:</strong> Help identify areas of agreement and track decision points</li>
+                  <li><strong>Follow-up Coordination:</strong> Schedule subsequent meetings based on discussion outcomes</li>
+                </ul>
+                <div class="use-case-quote">
+                  <p>"The AI agent helped us reduce our meeting time by 30% while improving the quality of our discussions and documentation."</p>
+                  <cite>— Sarah Chen, Product Manager</cite>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="tab-pane" id="actions">
+            <div class="use-case-content">
+              <div class="use-case-image">
+                <div class="image-placeholder">
+                  <svg width="80" height="80" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M9 5H7C5.89543 5 5 5.89543 5 7V19C5 20.1046 5.89543 21 7 21H17C18.1046 21 19 20.1046 19 19V7C19 5.89543 18.1046 5 17 5H15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M9 5C9 3.89543 9.89543 3 11 3H13C14.1046 3 15 3.89543 15 5C15 6.10457 14.1046 7 13 7H11C9.89543 7 9 6.10457 9 5Z" stroke="currentColor" stroke-width="2"/>
+                    <path d="M9 12L11 14L15 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </div>
+              </div>
+              <div class="use-case-details">
+                <h3>Automated Action Management</h3>
+                <p>Phone Agent can identify, track, and execute action items from conversations:</p>
+                <ul class="use-case-list">
+                  <li><strong>Action Detection:</strong> Automatically identify commitments and tasks mentioned during calls</li>
+                  <li><strong>Task Assignment:</strong> Create and assign tasks to appropriate team members in project management tools</li>
+                  <li><strong>Deadline Tracking:</strong> Set up reminders and follow-ups for pending action items</li>
+                  <li><strong>Status Updates:</strong> Proactively check on task progress and report back to stakeholders</li>
+                  <li><strong>Completion Verification:</strong> Confirm when actions have been completed and notify relevant parties</li>
+                </ul>
+                <div class="use-case-quote">
+                  <p>"We've seen a 45% increase in action item completion rates since implementing the Phone Agent system."</p>
+                  <cite>— Michael Rodriguez, Operations Director</cite>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="tab-pane" id="tools">
+            <div class="use-case-content">
+              <div class="use-case-image">
+                <div class="image-placeholder">
+                  <svg width="80" height="80" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M10.5 8.5L3.5 15.5M10.5 8.5L14 5M10.5 8.5L13.5 11.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M3.5 15.5L6.5 18.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M14 5L17 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M13.5 11.5L16.5 14.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M6.5 18.5L8 20" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M17 8L18.5 9.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M16.5 14.5L18 16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </div>
+              </div>
+              <div class="use-case-details">
+                <h3>Integrated Tool Orchestration</h3>
+                <p>Our AI agents can interact with various tools and systems during calls:</p>
+                <ul class="use-case-list">
+                  <li><strong>Data Retrieval:</strong> Access CRM data, product information, or customer history in real-time</li>
+                  <li><strong>Document Collaboration:</strong> Create, edit, and share documents based on call discussions</li>
+                  <li><strong>System Integration:</strong> Update records in ERP, CRM, or ticketing systems during the conversation</li>
+                  <li><strong>Calculation Assistance:</strong> Perform complex calculations or data analysis when requested</li>
+                  <li><strong>Workflow Automation:</strong> Trigger automated workflows based on call outcomes</li>
+                </ul>
+                <div class="use-case-quote">
+                  <p>"The ability to access and update our systems in real-time during client calls has transformed our customer service experience."</p>
+                  <cite>— Jennifer Park, Customer Success Lead</cite>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <section id="how-it-works" class="how-it-works">
+    <div class="container">
+      <div class="section-title">
+        <h2>How It Works</h2>
+        <p>Simple four-step process</p>
+      </div>
+      
+      <div class="flowchart">
+        <div class="flow-step">
+          <div class="flow-icon">
+            <div class="flow-number">1</div>
+          </div>
+          <div class="flow-content">
+            <h3>Forward Calendar Invite</h3>
+            <p>Send to <code>schedule@your-domain.com</code></p>
+          </div>
+          <div class="flow-arrow">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+        </div>
+        
+        <div class="flow-step">
+          <div class="flow-icon">
+            <div class="flow-number">2</div>
+          </div>
+          <div class="flow-content">
+            <h3>Extract Details</h3>
+            <p>System processes all relevant information</p>
+          </div>
+          <div class="flow-arrow">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+        </div>
+        
+        <div class="flow-step">
+          <div class="flow-icon">
+            <div class="flow-number">3</div>
+          </div>
+          <div class="flow-content">
+            <h3>AI Makes Call</h3>
+            <p>Agent calls at the scheduled time</p>
+          </div>
+          <div class="flow-arrow">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+        </div>
+        
+        <div class="flow-step">
+          <div class="flow-icon">
+            <div class="flow-number">4</div>
+          </div>
+          <div class="flow-content">
+            <h3>Receive Confirmation</h3>
+            <p>Get email with call details</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <section id="api" class="api-section">
+    <div class="container">
+      <div class="section-title">
+        <h2>API Reference</h2>
+        <p>Integration endpoints for developers</p>
+      </div>
+      
+      <div class="api-endpoints">
+        <div class="endpoint">
+          <div class="endpoint-url">
+            <span class="method">POST</span>
+            <span class="url">/api/webhook</span>
+          </div>
+          <div class="endpoint-desc">Process email notifications and calendar invites</div>
+          
+          <div class="endpoint-details">
+            <div class="endpoint-section">
+              <h4>Request Body</h4>
+              <pre><code>{
+  "sender": "user@example.com",
+  "subject": "Meeting Invitation",
+  "body": "...",
+  "attachments": [
+    {
+      "filename": "invite.ics",
+      "content": "BASE64_ENCODED_CONTENT"
+    }
+  ]
+}</code></pre>
+            </div>
+            
+            <div class="endpoint-section">
+              <h4>Response</h4>
+              <pre><code>{
+  "success": true,
+  "requestId": "req_123456",
+  "message": "Calendar invite processed successfully"
+}</code></pre>
+            </div>
+          </div>
+        </div>
+        
+        <div class="endpoint">
+          <div class="endpoint-url">
+            <span class="method">GET</span>
+            <span class="url">/api/schedule</span>
+          </div>
+          <div class="endpoint-desc">Retrieve scheduling information</div>
+          
+          <div class="endpoint-details">
+            <div class="endpoint-section">
+              <h4>Query Parameters</h4>
+              <table class="params-table">
+                <tr>
+                  <th>Parameter</th>
+                  <th>Type</th>
+                  <th>Description</th>
+                </tr>
+                <tr>
+                  <td>requestId</td>
+                  <td>string</td>
+                  <td>Unique identifier for the scheduling request</td>
+                </tr>
+                <tr>
+                  <td>email</td>
+                  <td>string</td>
+                  <td>Email address associated with the request (optional)</td>
+                </tr>
+              </table>
+            </div>
+            
+            <div class="endpoint-section">
+              <h4>Response</h4>
+              <pre><code>{
+  "success": true,
+  "schedule": {
+    "id": "call_789012",
+    "status": "scheduled",
+    "scheduledTime": "2025-04-01T15:30:00Z",
+    "duration": 30,
+    "participants": [
+      {
+        "name": "John Doe",
+        "email": "john@example.com",
+        "role": "organizer"
+      },
+      {
+        "name": "AI Agent",
+        "role": "attendee"
+      }
+    ]
+  }
+}</code></pre>
+            </div>
+          </div>
+        </div>
+        
+        <div class="endpoint">
+          <div class="endpoint-url">
+            <span class="method">POST</span>
+            <span class="url">/api/schedule/cancel</span>
+          </div>
+          <div class="endpoint-desc">Cancel a scheduled call</div>
+          
+          <div class="endpoint-details">
+            <div class="endpoint-section">
+              <h4>Request Body</h4>
+              <pre><code>{
+  "requestId": "req_123456",
+  "reason": "Scheduling conflict"
+}</code></pre>
+            </div>
+            
+            <div class="endpoint-section">
+              <h4>Response</h4>
+              <pre><code>{
+  "success": true,
+  "message": "Call successfully cancelled"
+}</code></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="api-note">
+        <p>All API requests require authentication using an API key in the <code>Authorization</code> header.</p>
+        <p>Example: <code>Authorization: Bearer YOUR_API_KEY</code></p>
+        <p>For detailed documentation and SDK examples, visit our <a href="#" class="api-link">Developer Portal</a>.</p>
+      </div>
+    </div>
+  </section>
+  
+  <footer>
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-logo">
+          <div class="logo">
+            <div class="logo-icon">
+              <div class="infinity"></div>
+            </div>
+            Phone Agent
+          </div>
+        </div>
+        
+        <div class="copyright">
+          © 2025 Phone Agent
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Simple tab functionality
+    document.addEventListener('DOMContentLoaded', function() {
+      const tabBtns = document.querySelectorAll('.tab-btn');
+      const tabPanes = document.querySelectorAll('.tab-pane');
+      
+      tabBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+          // Remove active class from all buttons and panes
+          tabBtns.forEach(b => b.classList.remove('active'));
+          tabPanes.forEach(p => p.classList.remove('active'));
+          
+          // Add active class to clicked button
+          this.classList.add('active');
+          
+          // Show corresponding tab pane
+          const tabId = this.getAttribute('data-tab');
+          document.getElementById(tabId).classList.add('active');
+        });
+      });
+    });
+  </script>
+</body>
+</html>
