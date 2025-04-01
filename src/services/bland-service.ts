@@ -54,7 +54,7 @@ export interface BlandAiServiceConfig {
 /**
  * Service for interacting with Bland.ai API
  */
-export class BlandAiService {
+export class BlandService {
   private apiKey: string;
   private webhookSecret: string;
   private agentId: string;
@@ -503,5 +503,8 @@ export class BlandAiService {
   }
 }
 
+// Export the BlandAiService class for backward compatibility
+export { BlandService as BlandAiService };
+
 // Create and export a singleton instance
-export const blandAiService = new BlandAiService();
+export const blandAiService = new BlandService();

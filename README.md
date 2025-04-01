@@ -1,6 +1,6 @@
-# Resend Webhook Forwarder
+# Phone Agent
 
-A Cloudflare Pages application that receives webhooks from Resend, validates them, transforms the payload, and forwards them to a target webhook endpoint.
+A Cloudflare Pages application that provides AI phone agent capabilities, including scheduling calls, managing calendars, and handling email notifications.
 
 ## Architecture
 
@@ -8,24 +8,24 @@ This application follows a simplified architecture using Cloudflare Pages Functi
 
 ```
 ┌─────────┐     ┌───────────────────┐     ┌─────────────────┐
-│ Resend  │────▶│ Cloudflare Pages  │────▶│ Target Webhook  │
+│ Resend  │────▶│ Cloudflare Pages  │────▶│ Bland.ai API    │
 └─────────┘     └───────────────────┘     └─────────────────┘
     │                    │                        │
     │                    │                        │
     ▼                    ▼                        ▼
-Email Events      Transform Payload       Process Payload
-                 Validate Signature
-                   Add Auth Token
+Email Events      Process Webhooks         Schedule Calls
+                  Manage Calendar          Handle Phone Calls
+                  Send Notifications
 ```
 
 ## Features
 
-- **Webhook Signature Validation**: Verifies the authenticity of incoming webhooks using HMAC signatures
-- **Payload Transformation**: Converts Resend webhook payloads into a standardized format
-- **Secure Forwarding**: Forwards transformed payloads to a target endpoint with authentication
-- **Retry Logic**: Implements exponential backoff for failed webhook deliveries
+- **AI Phone Agent**: Schedule and manage automated phone calls using Bland.ai
+- **Calendar Integration**: Create and manage calendar events for scheduled calls
+- **Email Notifications**: Send confirmation, rescheduling, and cancellation emails
+- **Webhook Processing**: Handle webhooks from email and phone call services
+- **Secure Storage**: Store call and scheduling data securely
 - **Error Handling**: Comprehensive error handling and reporting
-- **Failed Webhook Storage**: Option to store failed webhooks for later processing
 
 ## Project Structure
 
@@ -34,16 +34,24 @@ Email Events      Transform Payload       Process Payload
 ├── functions/                # Pages Functions (serverless API endpoints)
 │   ├── api/                  # API endpoints
 │   │   ├── webhook.js        # Webhook handler
+│   │   ├── schedule.js       # Call scheduling handler
 │   │   └── index.js          # API info endpoint
 │   └── static.js             # Static file handler
 ├── public/                   # Static assets
 ├── src/
 │   ├── config/               # Configuration
+│   ├── services/             # Core services
+│   │   ├── agent-scheduling-service.ts  # Call scheduling service
+│   │   ├── bland-service.ts             # Bland.ai integration
+│   │   ├── calendar-service.ts          # Calendar management
+│   │   ├── email-service.ts             # Email notifications
+│   │   └── storage-service.ts           # Data storage
 │   ├── types/                # TypeScript type definitions
 │   ├── utils/                # Utility functions
 │   └── webhooks/             # Webhook processing logic
 ├── test/                     # Tests
-│   ├── webhooks/             # Webhook tests
+│   ├── integration/          # Integration tests
+│   ├── services/             # Service tests
 │   └── ...                   # Other tests
 ├── _routes.json              # Cloudflare Pages routing configuration
 └── package.json              # Project configuration
@@ -58,6 +66,14 @@ The application requires the following environment variables:
 - `TARGET_WEBHOOK_AUTH_TOKEN`: The authentication token for your target webhook
 - `DEBUG_WEBHOOKS`: Set to "true" to enable debug logging (optional)
 - `STORE_FAILED_PAYLOADS`: Set to "true" to store failed webhook payloads (optional)
+- `RESEND_API_KEY`: API key for Resend email service
+- `SENDER_EMAIL`: Email address to use as sender
+- `SENDER_NAME`: Name to use as sender
+- `DEFAULT_TIMEZONE`: Default timezone for date/time formatting
+- `BLAND_AI_API_KEY`: API key for Bland.ai service
+- `BLAND_AI_BASE_URL`: Base URL for Bland.ai API
+- `MAX_CALL_DURATION_MINUTES`: Maximum call duration in minutes
+- `DEFAULT_RETRY_COUNT`: Default number of retries for API calls
 
 ## Development
 
@@ -71,8 +87,8 @@ The application requires the following environment variables:
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/yourusername/resend-webhook-forwarder.git
-cd resend-webhook-forwarder
+git clone https://github.com/yourusername/phone-agent.git
+cd phone-agent
 ```
 
 2. Install dependencies:
@@ -81,25 +97,31 @@ cd resend-webhook-forwarder
 npm install
 ```
 
-3. Create a `.dev.vars` file with your environment variables:
-
-```
-WEBHOOK_SIGNING_SECRET=your_signing_secret
-TARGET_WEBHOOK_URL=https://your-target-webhook.com
-TARGET_WEBHOOK_AUTH_TOKEN=your_auth_token
-DEBUG_WEBHOOKS=true
-STORE_FAILED_PAYLOADS=true
-```
+3. Create a `.env` file with your environment variables (see `.env.example` for reference).
 
 ### Running Locally
 
-Start the development server:
+There are two ways to run the application locally:
+
+#### Option 1: Using Wrangler (Standard Method)
+
+Start the development server using Wrangler:
 
 ```bash
 npm run dev
 ```
 
 This will start a local server at http://localhost:8788.
+
+#### Option 2: Using Custom Development Server (GLIBC Compatibility Issues)
+
+If you encounter GLIBC compatibility issues with Wrangler, use our custom development server:
+
+```bash
+npm run dev:local
+```
+
+This will start a local Express server at http://localhost:8787 that mimics the Cloudflare Pages environment.
 
 ### Testing
 
@@ -137,7 +159,9 @@ Alternatively, you can deploy using the Wrangler CLI:
 npm run deploy
 ```
 
-## Setting Up Resend Webhooks
+## Setting Up Webhooks
+
+### Resend Webhooks
 
 1. Log in to your Resend account.
 2. Navigate to the Webhooks section.
@@ -146,6 +170,14 @@ npm run deploy
 5. Select the events you want to receive (e.g., `email.sent`, `email.delivered`, etc.).
 6. Save the webhook configuration.
 7. Copy the signing secret for use in your environment variables.
+
+### Bland.ai Webhooks
+
+1. Log in to your Bland.ai account.
+2. Navigate to the Webhooks section.
+3. Configure a webhook endpoint pointing to your application (e.g., `https://your-app.pages.dev/api/webhook`).
+4. Select the call events you want to receive.
+5. Save the webhook configuration.
 
 ## License
 

@@ -261,6 +261,47 @@ export class StorageService {
     const keys = await this.listKeys('call:', limit);
     return keys.map(key => key.replace('call:', ''));
   }
+
+  /**
+   * Store request data
+   * @param requestId Request ID
+   * @param data Request data
+   * @returns Promise resolving to true if successful
+   */
+  async storeRequestData(requestId: string, data: any): Promise<boolean> {
+    return this.set(`request:${requestId}`, data);
+  }
+
+  /**
+   * Get request data
+   * @param requestId Request ID
+   * @returns Promise resolving to the request data or null if not found
+   */
+  async getRequestData(requestId: string): Promise<any> {
+    return this.get(`request:${requestId}`);
+  }
+
+  /**
+   * Update request data
+   * @param requestId Request ID
+   * @param updateFn Function to update the data
+   * @returns Promise resolving to true if successful
+   */
+  async updateRequestData(requestId: string, updateFn: (data: any) => any): Promise<boolean> {
+    const data = await this.getRequestData(requestId);
+    const updatedData = updateFn(data);
+    return this.storeRequestData(requestId, updatedData);
+  }
+
+  /**
+   * List request IDs
+   * @param limit Maximum number of IDs to return
+   * @returns Promise resolving to an array of request IDs
+   */
+  async listRequestIds(limit: number = 100): Promise<string[]> {
+    const keys = await this.listKeys('request:', limit);
+    return keys.map(key => key.replace('request:', ''));
+  }
 }
 
 // Create and export a singleton instance

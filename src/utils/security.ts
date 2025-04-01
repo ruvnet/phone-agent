@@ -1,4 +1,3 @@
-import { createHmac, timingSafeEqual } from 'crypto';
 import { webhookConfig } from '../config/webhook';
 
 /**
@@ -13,22 +12,22 @@ export interface SignatureVerificationResult {
  * Verify a webhook signature using HMAC
  * 
  * @param payload The raw request body as a string
- * @param signature The signature from the request headers
+ * @param signatureHeader The signature from the request headers
  * @param timestamp The timestamp from the request headers
  * @returns A result object indicating if the signature is valid
  */
-export function verifyWebhookSignature(
+export async function verifyWebhookSignature(
   payload: string,
-  signature: string,
+  signatureHeader: string,
   timestamp: string
-): SignatureVerificationResult {
+): Promise<SignatureVerificationResult> {
   try {
     // Check if required parameters are provided
     if (!payload) {
       return { isValid: false, error: 'Missing payload' };
     }
     
-    if (!signature) {
+    if (!signatureHeader) {
       return { isValid: false, error: 'Missing signature' };
     }
     
@@ -59,7 +58,7 @@ export function verifyWebhookSignature(
     }
     
     // Parse the signature header (format: v1,signature1,v2,signature2)
-    const signatureParts = signature.split(',');
+    const signatureParts = signatureHeader.split(',');
     let signatureV1: string | null = null;
     
     // Find the v1 signature
@@ -77,21 +76,34 @@ export function verifyWebhookSignature(
     // Create the signature message (timestamp + '.' + payload)
     const signatureMessage = `${timestamp}.${payload}`;
     
-    // Create the expected signature
-    const hmac = createHmac('sha256', secret);
-    hmac.update(signatureMessage);
-    const expectedSignature = hmac.digest('hex');
+    // Create the expected signature using Web Crypto API
+    const encoder = new TextEncoder();
+    const secretKeyData = encoder.encode(secret);
+    const messageData = encoder.encode(signatureMessage);
     
-    // Compare signatures using constant-time comparison to prevent timing attacks
-    const signatureBuffer = Buffer.from(signatureV1);
-    const expectedBuffer = Buffer.from(expectedSignature);
+    // Import the secret key
+    const key = await crypto.subtle.importKey(
+      'raw',
+      secretKeyData,
+      { name: 'HMAC', hash: 'SHA-256' },
+      false,
+      ['sign']
+    );
     
-    // Ensure the buffers are the same length for timingSafeEqual
-    if (signatureBuffer.length !== expectedBuffer.length) {
-      return { isValid: false, error: 'Invalid signature length' };
-    }
+    // Sign the message
+    const signatureBytes = await crypto.subtle.sign(
+      'HMAC',
+      key,
+      messageData
+    );
     
-    const isValid = timingSafeEqual(signatureBuffer, expectedBuffer);
+    // Convert to hex string
+    const expectedSignature = Array.from(new Uint8Array(signatureBytes))
+      .map(b => b.toString(16).padStart(2, '0'))
+      .join('');
+    
+    // Compare signatures
+    const isValid = signatureV1 === expectedSignature;
     
     return { isValid };
   } catch (error) {

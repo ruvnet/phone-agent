@@ -4,7 +4,8 @@
   "description": "A Cloudflare Pages application that receives webhooks from Resend, validates them, transforms the payload, and forwards them to a target webhook endpoint",
   "main": "dist/index.js",
   "scripts": {
-    "dev": "wrangler pages dev --compatibility-date=2023-06-01",
+    "dev": "wrangler pages dev public --compatibility-date=2023-06-01",
+    "dev:local": "./dev.sh",
     "build": "tsc",
     "test": "vitest run",
     "test:watch": "vitest",
@@ -39,15 +40,18 @@
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20230518.0",
+    "@types/express": "^5.0.1",
     "@types/node": "^18.19.84",
     "@types/uuid": "^10.0.0",
     "@typescript-eslint/eslint-plugin": "^5.59.2",
     "@typescript-eslint/parser": "^5.59.2",
+    "dotenv": "^16.4.7",
     "eslint": "^8.40.0",
     "eslint-config-prettier": "^8.8.0",
+    "express": "^5.1.0",
     "prettier": "^2.8.8",
     "typescript": "^5.0.4",
     "vitest": "^3.1.1",
-    "wrangler": "^3.0.0"
+    "wrangler": "^4.6.0"
   }
 }

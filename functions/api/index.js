@@ -1,28 +1,51 @@
 /**
- * Default API endpoint
+ * API Index Endpoint
  * 
- * @param {Request} request The incoming request
- * @param {Object} env Environment variables
- * @param {Object} ctx Context object
- * @returns {Response} The response
+ * This endpoint provides basic information about the API and serves as a health check.
  */
-export async function onRequest(request, env, ctx) {
-  return new Response(
-    JSON.stringify({
-      success: true,
-      message: 'Phone Agent API is running',
-      version: '1.0.0',
-      endpoints: [
-        {
-          path: '/api/webhook',
-          methods: ['POST'],
-          description: 'Webhook endpoint for Resend email events',
-        }
-      ],
-    }),
-    {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' },
+
+export async function onRequest(context) {
+  const { request, env } = context;
+  
+  // Get environment information (safely)
+  const environment = process.env.NODE_ENV || 'development';
+  
+  // Create response with API information
+  const apiInfo = {
+    name: "Phone Agent API",
+    version: "1.0.0",
+    status: "operational",
+    environment: environment,
+    timestamp: new Date().toISOString(),
+    endpoints: [
+      {
+        path: "/api",
+        method: "GET",
+        description: "API information and health check"
+      },
+      {
+        path: "/api/webhook",
+        method: "POST",
+        description: "Process email notifications and calendar invites"
+      },
+      {
+        path: "/api/schedule",
+        method: "GET",
+        description: "Retrieve scheduling information"
+      },
+      {
+        path: "/api/schedule/cancel",
+        method: "POST",
+        description: "Cancel a scheduled call"
+      }
+    ]
+  };
+  
+  // Return JSON response
+  return new Response(JSON.stringify(apiInfo, null, 2), {
+    headers: {
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*"
     }
-  );
+  });
 }

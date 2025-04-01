@@ -1,32 +1,32 @@
-# Cloudflare Worker configuration for Resend webhook forwarder
+# Cloudflare Pages configuration for Phone Agent
 
-name = "resend-webhook-forwarder"
-main = "src/index.ts"
+name = "phone-agent"
 compatibility_date = "2023-10-30"
 
 # Environment variables
 # These are placeholder values and should be set in the Cloudflare dashboard
-# or using wrangler secrets commands
 [vars]
 DEBUG_WEBHOOKS = "false"
 STORE_FAILED_PAYLOADS = "true"
 
 # Development environment
-[env.dev]
+[env.dev.vars]
 # Use this for local development
-# wrangler dev --env dev
+# wrangler pages dev --env dev
 
 # Staging environment
-[env.staging]
+[env.staging.vars]
 # Use this for testing in a non-production environment
-# wrangler publish --env staging
+# wrangler pages publish --env staging
 
 # Production environment
-[env.production]
+[env.production.vars]
 # Use this for the production deployment
-# wrangler publish --env production
+# wrangler pages publish --env production
 
 # Secrets (these need to be set using wrangler secret commands)
 # wrangler secret put WEBHOOK_SIGNING_SECRET --env production
 # wrangler secret put TARGET_WEBHOOK_URL --env production
 # wrangler secret put TARGET_WEBHOOK_AUTH_TOKEN --env production
+# wrangler secret put RESEND_API_KEY --env production
+# wrangler secret put BLAND_AI_API_KEY --env production
