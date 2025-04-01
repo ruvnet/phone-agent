@@ -1,8 +1,4 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
-import { emailService } from '../../src/services/email-service';
-import { calendarService } from '../../src/services/calendar-service';
-import { blandAiService } from '../../src/services/bland-service';
-import { storageService } from '../../src/services/storage-service';
 import { AppError } from '../../src/utils/logger';
 
 // Mock all services
@@ -56,18 +52,20 @@ vi.mock('../../src/services/bland-service', () => ({
   }
 }));
 
+// Create a mock call data object that will be used by the storage service
+const mockCallData = {
+  callId: 'mock-call-id',
+  status: 'scheduled',
+  scheduledTime: '2025-04-01T14:00:00Z',
+  duration: 60,
+  phoneNumber: '+15551234567',
+  recipientName: 'John Doe',
+  recipientEmail: 'john@example.com',
+  topic: 'Test Call'
+};
+
+// Mock storage service with a more reliable implementation
 vi.mock('../../src/services/storage-service', () => {
-  const mockCallData = {
-    callId: 'mock-call-id',
-    status: 'scheduled',
-    scheduledTime: '2025-04-01T14:00:00Z',
-    duration: 60,
-    phoneNumber: '+15551234567',
-    recipientName: 'John Doe',
-    recipientEmail: 'john@example.com',
-    topic: 'Test Call'
-  };
-  
   return {
     storageService: {
       storeCallData: vi.fn().mockResolvedValue(true),
@@ -78,7 +76,7 @@ vi.mock('../../src/services/storage-service', () => {
         if (callId === 'non-existent-call') {
           return Promise.resolve(null);
         }
-        return Promise.resolve(mockCallData);
+        return Promise.resolve(null);
       }),
       updateCallData: vi.fn().mockResolvedValue(true)
     }
@@ -110,6 +108,12 @@ vi.mock('../../src/utils/config', () => {
     }
   };
 });
+
+// Import services after mocks are defined
+import { emailService } from '../../src/services/email-service';
+import { calendarService } from '../../src/services/calendar-service';
+import { blandAiService } from '../../src/services/bland-service';
+import { storageService } from '../../src/services/storage-service';
 
 describe('Bland.ai Agent Scheduling Workflow', () => {
   beforeEach(() => {
@@ -227,6 +231,9 @@ describe('Bland.ai Agent Scheduling Workflow', () => {
 
   describe('Call Management', () => {
     it('should reschedule an existing call', async () => {
+      // Ensure getCallData returns the mock data for this test
+      (storageService.getCallData as any).mockResolvedValueOnce(mockCallData);
+      
       // New scheduled time
       const newScheduledTime = new Date('2025-04-02T15:00:00Z');
       
@@ -258,6 +265,9 @@ describe('Bland.ai Agent Scheduling Workflow', () => {
     });
 
     it('should cancel an existing call', async () => {
+      // Ensure getCallData returns the mock data for this test
+      (storageService.getCallData as any).mockResolvedValueOnce(mockCallData);
+      
       // Cancel call
       const result = await cancelAgentCall('mock-call-id', 'Schedule conflict');
 
@@ -285,14 +295,9 @@ describe('Bland.ai Agent Scheduling Workflow', () => {
     });
 
     it('should handle non-existent calls', async () => {
-      // Mock storage to return null for non-existent call
+      // Mock getCallData to return null for non-existent call
       (storageService.getCallData as any).mockResolvedValueOnce(null);
-
-      // Mock Bland.ai service to throw error for non-existent call
-      (blandAiService.cancelCall as any).mockRejectedValueOnce(
-        new AppError('Call not found', 404)
-      );
-
+      
       // Attempt to cancel non-existent call
       await expect(cancelAgentCall('non-existent-call', 'Test reason')).rejects.toThrow('Call not found');
     });
@@ -522,7 +527,7 @@ async function rescheduleAgentCall(callId: string, newScheduledTime: Date, reaso
     }
     
     // Reschedule call with Bland.ai
-    const result = await blandAiService.rescheduleCall(callId, newScheduledTime, reason);
+    await blandAiService.rescheduleCall(callId, newScheduledTime, reason);
     
     // Generate new calendar event
     const calendarEvent = calendarService.createCallEvent({
@@ -566,7 +571,7 @@ async function rescheduleAgentCall(callId: string, newScheduledTime: Date, reaso
       success: true,
       callId,
       status: 'rescheduled',
-      newScheduledTime: result.newScheduledTime
+      newScheduledTime: newScheduledTime.toISOString()
     };
   } catch (error) {
     throw error;
@@ -586,7 +591,7 @@ async function cancelAgentCall(callId: string, reason?: string): Promise<any> {
     }
     
     // Cancel call with Bland.ai
-    const result = await blandAiService.cancelCall(callId, reason);
+    await blandAiService.cancelCall(callId, reason);
     
     // Send cancellation notification
     await emailService.sendCancellationNotification(
@@ -614,7 +619,7 @@ async function cancelAgentCall(callId: string, reason?: string): Promise<any> {
       success: true,
       callId,
       status: 'cancelled',
-      cancelledAt: result.cancelledAt
+      cancelledAt: new Date().toISOString()
     };
   } catch (error) {
     throw error;

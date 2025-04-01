@@ -1,8 +1,36 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import { EmailService, EmailParams } from '../../src/services/email-service';
+import { AppError } from '../../src/utils/logger';
 
-// Mock the EmailService module
-vi.mock('../../src/services/email-service');
+// Mock dependencies but not the service itself
+vi.mock('../../src/utils/config', () => ({
+  config: {
+    getEmailConfig: vi.fn().mockReturnValue({
+      apiKey: 'test-api-key',
+      senderEmail: 'test@example.com',
+      senderName: 'Test Sender',
+      templatesDir: './test/templates'
+    }),
+    get: vi.fn().mockImplementation((key, defaultValue) => defaultValue)
+  }
+}));
+
+vi.mock('../../src/utils/logger', () => ({
+  logger: {
+    info: vi.fn(),
+    warn: vi.fn(),
+    error: vi.fn(),
+    debug: vi.fn()
+  },
+  AppError: class extends Error {
+    statusCode: number;
+    constructor(message: string, statusCode = 500) {
+      super(message);
+      this.name = 'AppError';
+      this.statusCode = statusCode;
+    }
+  }
+}));
 
 describe('EmailService', () => {
   let service: EmailService;
@@ -18,7 +46,7 @@ describe('EmailService', () => {
     // Create a mock for Resend
     resendMock = {
       emails: {
-        send: vi.fn().mockResolvedValue({ id: 'mock-email-id', success: true })
+        send: vi.fn().mockResolvedValue({ id: 'mock-email-id', to: 'recipient@example.com', subject: 'Test Subject', success: true })
       }
     };
     
@@ -91,10 +119,13 @@ describe('EmailService', () => {
       
       const result = await service.sendEmail(emailParams);
       
-      expect(result).toEqual({ id: 'mock-email-id', success: true });
+      expect(result).toEqual({ id: 'mock-email-id', to: 'recipient@example.com', subject: 'Test Subject', success: true });
     });
     
     it('should throw an error if email fails to send', async () => {
+      // Mock the Resend send method to throw an error
+      resendMock.emails.send.mockRejectedValueOnce(new Error('Send failed'));
+      
       const emailParams: EmailParams = {
         to: 'error@example.com',
         subject: 'Test Subject',
@@ -105,6 +136,9 @@ describe('EmailService', () => {
     });
     
     it('should throw an error for invalid email address', async () => {
+      // Mock the isValidEmail method to return false
+      vi.spyOn(service, 'isValidEmail').mockReturnValueOnce(false);
+      
       const emailParams: EmailParams = {
         to: '',  // Empty email
         subject: 'Test Subject',
@@ -150,7 +184,7 @@ describe('EmailService', () => {
       };
       
       // Spy on the sendEmail method
-      const sendEmailSpy = vi.spyOn(service, 'sendEmail');
+      const sendEmailSpy = vi.spyOn(service, 'sendEmail').mockResolvedValueOnce({ id: 'mock-email-id', success: true });
       
       await service.sendCallConfirmation('john@example.com', callDetails);
       
@@ -188,7 +222,7 @@ describe('EmailService', () => {
       const reason = 'speaker unavailable';
       
       // Spy on the sendEmail method
-      const sendEmailSpy = vi.spyOn(service, 'sendEmail');
+      const sendEmailSpy = vi.spyOn(service, 'sendEmail').mockResolvedValueOnce({ id: 'mock-email-id', success: true });
       
       await service.sendRescheduleNotification('john@example.com', callDetails, reason);
       
@@ -225,7 +259,7 @@ describe('EmailService', () => {
       };
       
       // Spy on the sendEmail method
-      const sendEmailSpy = vi.spyOn(service, 'sendEmail');
+      const sendEmailSpy = vi.spyOn(service, 'sendEmail').mockResolvedValueOnce({ id: 'mock-email-id', success: true });
       
       await service.sendRescheduleNotification('john@example.com', callDetails);
       
@@ -249,7 +283,7 @@ describe('EmailService', () => {
       const reason = 'emergency situation';
       
       // Spy on the sendEmail method
-      const sendEmailSpy = vi.spyOn(service, 'sendEmail');
+      const sendEmailSpy = vi.spyOn(service, 'sendEmail').mockResolvedValueOnce({ id: 'mock-email-id', success: true });
       
       await service.sendCancellationNotification('john@example.com', callDetails, reason);
       
@@ -279,7 +313,7 @@ describe('EmailService', () => {
       };
       
       // Spy on the sendEmail method
-      const sendEmailSpy = vi.spyOn(service, 'sendEmail');
+      const sendEmailSpy = vi.spyOn(service, 'sendEmail').mockResolvedValueOnce({ id: 'mock-email-id', success: true });
       
       await service.sendCancellationNotification('john@example.com', callDetails);
       

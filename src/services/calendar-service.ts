@@ -2,11 +2,11 @@ import { v4 as uuidv4 } from 'uuid';
 import { config } from '../utils/config';
 import { AppError, logger } from '../utils/logger';
 
-// Try to import ICAL.js
+// Import ICAL.js with proper type handling
 let ICAL: any;
 try {
-  // Use global ICAL if available in Cloudflare Workers environment
-  ICAL = (globalThis as any).ICAL;
+  // Dynamic import for ICAL.js
+  ICAL = require('ical.js');
 } catch (error) {
   logger.warn('ical.js package not found, calendar functionality will be limited');
 }
