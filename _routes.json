@@ -1,8 +1,33 @@
 {
   "version": 1,
+  "include": [
+    "/*"
+  ],
+  "exclude": [],
   "routes": [
-    { "pattern": "/api/webhook", "script": "webhook" },
-    { "pattern": "/api/*", "script": "api" },
-    { "pattern": "*", "script": "static" }
+    {
+      "src": "/server-status.js",
+      "dest": "/server-status"
+    },
+    {
+      "src": "/js/call-scheduler.js",
+      "dest": "/js/call-scheduler"
+    },
+    {
+      "src": "/js/text-animator.js",
+      "dest": "/js/text-animator"
+    },
+    {
+      "src": "/components/call-modal.html",
+      "dest": "/components/call-modal.html"
+    },
+    {
+      "src": "/css/modal-styles.css",
+      "dest": "/css/modal-styles.css"
+    },
+    {
+      "src": "/css/animations.css",
+      "dest": "/css/animations.css"
+    }
   ]
 }

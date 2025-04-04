@@ -8,7 +8,7 @@ export async function onRequest(context) {
   const { request, env } = context;
   
   // Get environment information (safely)
-  const environment = process.env.NODE_ENV || 'development';
+  const environment = env.NODE_ENV || 'production';
   
   // Create response with API information
   const apiInfo = {

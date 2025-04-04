@@ -1,0 +1,46 @@
+{
+  "customModes": [
+    {
+      "includes": ".roomodes.d/modes/sparc.json"
+    },
+    {
+      "includes": ".roomodes.d/modes/spec-pseudocode.json"
+    },
+    {
+      "includes": ".roomodes.d/modes/architect.json"
+    },
+    {
+      "includes": ".roomodes.d/modes/code.json"
+    },
+    {
+      "includes": ".roomodes.d/modes/tdd.json"
+    },
+    {
+      "includes": ".roomodes.d/modes/debug.json"
+    },
+    {
+      "includes": ".roomodes.d/modes/security-review.json"
+    },
+    {
+      "includes": ".roomodes.d/modes/docs-writer.json"
+    },
+    {
+      "includes": ".roomodes.d/modes/integration.json"
+    },
+    {
+      "includes": ".roomodes.d/modes/post-deployment-monitoring.json"
+    },
+    {
+      "includes": ".roomodes.d/modes/refinement-optimization.json"
+    },
+    {
+      "includes": ".roomodes.d/modes/ask.json"
+    },
+    {
+      "includes": ".roomodes.d/modes/devops.json"
+    },
+    {
+      "includes": ".roomodes.d/modes/tutorial.json"
+    }
+  ]
+}

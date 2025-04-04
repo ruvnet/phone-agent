@@ -1,0 +1,64 @@
+<!-- Call Scheduling Modal -->
+<div id="call-modal" class="modal">
+  <div class="modal-content">
+    <span class="close-modal">&times;</span>
+    <h2>Schedule an AI Agent Call</h2>
+    <p>Enter your details to have our AI agent call you at your preferred time.</p>
+    
+    <form id="schedule-call-form">
+      <div class="form-group">
+        <label for="name">
+          <i class="fas fa-user"></i> Your Name
+        </label>
+        <input type="text" id="name" name="name" placeholder="Enter your full name" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="phone">
+          <i class="fas fa-phone"></i> Phone Number
+        </label>
+        <input type="tel" id="phone" name="phone" placeholder="+1 (123) 456-7890" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="datetime">
+          <i class="fas fa-calendar-alt"></i> Preferred Date & Time
+        </label>
+        <input type="datetime-local" id="datetime" name="datetime" required>
+        <div class="call-now-option">
+          <input type="checkbox" id="call-now" name="call-now">
+          <label for="call-now">Call me immediately (for testing)</label>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label for="topic">
+          <i class="fas fa-comment-alt"></i> Call Topic
+        </label>
+        <input type="text" id="topic" name="topic" placeholder="What would you like to discuss? (Optional)">
+      </div>
+      
+      <button type="submit" class="btn btn-primary" id="schedule-button">
+        <i class="fas fa-phone-alt"></i> Schedule Call
+      </button>
+    </form>
+    
+    <div id="form-response" class="hidden"></div>
+  </div>
+</div>
+
+<style>
+  .call-now-option {
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+    color: #b8b8b8;
+  }
+  
+  .call-now-option input[type="checkbox"] {
+    width: auto;
+    margin-right: 5px;
+  }
+</style>

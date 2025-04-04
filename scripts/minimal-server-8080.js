@@ -6,12 +6,11 @@
  */
 
 const http = require('http');
-const https = require('https');
 const fs = require('fs');
 const path = require('path');
 const url = require('url');
 
-const PORT = process.env.PORT || 8787;
+const PORT = process.env.PORT || 8080; // Changed port to 8080
 const PUBLIC_DIR = path.join(__dirname, '../public');
 
 // MIME types for different file extensions
@@ -101,79 +100,6 @@ const serveStaticFile = (req, res, filePath) => {
   });
 };
 
-// Make a request to the Cloudflare Pages API
-const callCloudflareApi = async (method, path, data = null) => {
-  // Get the Cloudflare endpoint from environment variables
-  const cloudflareEndpoint = process.env.CLOUDFLARE_SCHEDULE_ENDPOINT || 'https://phone-agent.pages.dev/api/schedule';
-  const cloudflareApiToken = process.env.CLOUDFLARE_API_TOKEN || '';
-  
-  // Parse the URL to get hostname, path, etc.
-  const parsedUrl = new URL(cloudflareEndpoint);
-  const baseUrl = parsedUrl.origin;
-  const apiPath = parsedUrl.pathname + (path ? path : '');
-  
-  console.log(`[CLOUDFLARE] Making ${method} request to ${baseUrl}${apiPath}`);
-  
-  return new Promise((resolve, reject) => {
-    const options = {
-      method: method,
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    };
-    
-    // Add authorization if token is available
-    if (cloudflareApiToken) {
-      options.headers['Authorization'] = `Bearer ${cloudflareApiToken}`;
-    }
-    
-    // For GET requests with query parameters
-    let fullPath = apiPath;
-    if (method === 'GET' && data) {
-      const queryParams = new URLSearchParams(data).toString();
-      fullPath = `${apiPath}?${queryParams}`;
-    }
-    
-    // Create the request
-    const req = https.request(`${baseUrl}${fullPath}`, options, (res) => {
-      let responseData = '';
-      
-      res.on('data', (chunk) => {
-        responseData += chunk;
-      });
-      
-      res.on('end', () => {
-        try {
-          const parsedData = JSON.parse(responseData);
-          console.log(`[CLOUDFLARE] Response status: ${res.statusCode}`);
-          
-          if (res.statusCode >= 200 && res.statusCode < 300) {
-            resolve(parsedData);
-          } else {
-            console.error(`[CLOUDFLARE] API error: ${parsedData.message || 'Unknown error'}`);
-            reject(new Error(parsedData.message || 'API request failed'));
-          }
-        } catch (error) {
-          console.error('[CLOUDFLARE] Error parsing response:', error);
-          reject(error);
-        }
-      });
-    });
-    
-    req.on('error', (error) => {
-      console.error('[CLOUDFLARE] Request error:', error);
-      reject(error);
-    });
-    
-    // Send data for POST/PUT requests
-    if ((method === 'POST' || method === 'PUT') && data) {
-      req.write(JSON.stringify(data));
-    }
-    
-    req.end();
-  });
-};
-
 // API handlers
 const apiHandlers = {
   // GET /api - API information
@@ -193,24 +119,19 @@ const apiHandlers = {
           description: "API information and health check"
         },
         {
-          path: "/api/config",
-          method: "GET",
-          description: "Get API configuration"
-        },
-        {
           path: "/api/webhook",
           method: "POST",
           description: "Process email notifications and calendar invites"
         },
         {
           path: "/api/schedule",
-          method: "POST",
-          description: "Schedule a call with the AI agent"
+          method: "GET",
+          description: "Retrieve scheduling information"
         },
         {
           path: "/api/schedule",
-          method: "GET",
-          description: "Retrieve scheduling information"
+          method: "POST",
+          description: "Schedule a new call"
         },
         {
           path: "/api/schedule/cancel",
@@ -221,21 +142,6 @@ const apiHandlers = {
     };
     
     sendJsonResponse(res, apiInfo);
-  },
-  
-  // GET /api/config - Get API configuration
-  'GET /api/config': (req, res) => {
-    console.log('[API] GET /api/config - Config endpoint accessed');
-    
-    // Return the configuration from environment variables
-    const config = {
-      cloudflareEndpoint: process.env.CLOUDFLARE_SCHEDULE_ENDPOINT || 'https://phone-agent.pages.dev/api/schedule',
-      environment: process.env.NODE_ENV || 'development',
-      debug: process.env.DEBUG_WEBHOOKS === 'true',
-      timestamp: new Date().toISOString()
-    };
-    
-    sendJsonResponse(res, config);
   },
   
   // POST /api/webhook - Process webhook
@@ -276,109 +182,70 @@ const apiHandlers = {
   },
   
   // GET /api/schedule - Get schedule information
-  'GET /api/schedule': async (req, res) => {
+  'GET /api/schedule': (req, res) => {
     console.log('[API] GET /api/schedule - Schedule endpoint accessed');
     
-    try {
-      const parsedUrl = url.parse(req.url, true);
-      const { callId } = parsedUrl.query;
-      
-      if (callId) {
-        // If callId is provided, forward the request to Cloudflare
-        console.log(`[API] Checking status for call ID: ${callId}`);
-        
-        try {
-          const callStatus = await callCloudflareApi('GET', '', { callId });
-          sendJsonResponse(res, callStatus);
-        } catch (error) {
-          console.error('Error checking call status:', error);
-          sendJsonResponse(res, {
-            success: false,
-            error: 'Failed to check call status',
-            message: error.message
-          }, 500);
+    const parsedUrl = url.parse(req.url, true);
+    const { requestId, email } = parsedUrl.query;
+    
+    // Mock schedule data
+    const schedule = {
+      id: requestId || "call_" + Math.random().toString(36).substring(2, 8),
+      status: "scheduled",
+      scheduledTime: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), // Tomorrow
+      duration: 30,
+      participants: [
+        {
+          name: "John Doe",
+          email: email || "john@example.com",
+          role: "organizer"
+        },
+        {
+          name: "AI Agent",
+          role: "attendee"
         }
-      } else {
-        // If no callId, return mock schedule data
-        const requestId = parsedUrl.query.requestId;
-        const email = parsedUrl.query.email;
-        
-        // Mock schedule data
-        const schedule = {
-          id: requestId || "call_" + Math.random().toString(36).substring(2, 8),
-          status: "scheduled",
-          scheduledTime: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), // Tomorrow
-          duration: 30,
-          participants: [
-            {
-              name: "John Doe",
-              email: email || "john@example.com",
-              role: "organizer"
-            },
-            {
-              name: "AI Agent",
-              role: "attendee"
-            }
-          ]
-        };
-        
-        sendJsonResponse(res, {
-          success: true,
-          schedule
-        });
-      }
-    } catch (error) {
-      console.error('Error processing schedule request:', error);
-      sendJsonResponse(res, {
-        success: false,
-        error: 'Internal server error',
-        message: error.message
-      }, 500);
-    }
+      ]
+    };
+    
+    sendJsonResponse(res, {
+      success: true,
+      schedule
+    });
   },
   
-  // POST /api/schedule - Schedule a call
+  // POST /api/schedule - Schedule a new call
   'POST /api/schedule': async (req, res) => {
-    console.log('[API] POST /api/schedule - Schedule call endpoint accessed');
+    console.log('[API] POST /api/schedule - Schedule endpoint accessed');
     
     try {
       const payload = await parseJsonBody(req);
-      const { name, phone, scheduledTime, topic, immediate } = payload;
+      const { name, phone, scheduledTime, topic } = payload;
       
       // Validate required fields
       if (!name || !phone || !scheduledTime) {
         sendJsonResponse(res, {
           success: false,
           error: 'Bad Request',
-          message: 'Missing required fields'
+          message: 'Missing required fields: name, phone, and scheduledTime are required'
         }, 400);
         return;
       }
       
-      console.log('[CALL SCHEDULED]', {
-        name,
-        phone: phone.substring(0, 3) + '****' + phone.substring(phone.length - 4), // Mask phone number
-        scheduledTime,
-        topic,
-        immediate: !!immediate
-      });
+      // Generate a unique request ID
+      const requestId = `req_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
       
-      // Forward the request to the Cloudflare Pages API
-      try {
-        console.log('[API] Forwarding call request to Cloudflare Pages API');
-        
-        const response = await callCloudflareApi('POST', '', payload);
-        
-        // Return the response from Cloudflare
-        sendJsonResponse(res, response);
-      } catch (error) {
-        console.error('Error making call through Cloudflare API:', error);
-        sendJsonResponse(res, {
-          success: false,
-          error: 'Failed to schedule call',
-          message: error.message
-        }, 500);
-      }
+      // Mock successful response
+      sendJsonResponse(res, {
+        success: true,
+        requestId: requestId,
+        message: 'Call scheduled successfully',
+        scheduledTime: scheduledTime,
+        details: {
+          name,
+          phone: phone.substring(0, 3) + '****' + phone.substring(phone.length - 4), // Mask phone number
+          topic: topic || 'General discussion'
+        }
+      });
     } catch (error) {
       console.error('Error scheduling call:', error);
       sendJsonResponse(res, {
@@ -406,24 +273,11 @@ const apiHandlers = {
         return;
       }
       
-      // Forward the cancel request to Cloudflare
-      try {
-        console.log(`[API] Forwarding cancel request for ID: ${requestId}`);
-        
-        const response = await callCloudflareApi('POST', '/cancel', payload);
-        
-        // Return the response from Cloudflare
-        sendJsonResponse(res, response);
-      } catch (error) {
-        console.error('Error cancelling call through Cloudflare API:', error);
-        
-        // If the Cloudflare API fails, return a mock success response
-        sendJsonResponse(res, {
-          success: true,
-          message: `Call ${requestId} successfully cancelled`,
-          reason: reason || 'User requested cancellation'
-        });
-      }
+      sendJsonResponse(res, {
+        success: true,
+        message: `Call ${requestId} successfully cancelled`,
+        reason: reason || 'User requested cancellation'
+      });
     } catch (error) {
       console.error('Error cancelling schedule:', error);
       sendJsonResponse(res, {
@@ -437,6 +291,18 @@ const apiHandlers = {
 
 // Create HTTP server
 const server = http.createServer(async (req, res) => {
+  // Add CORS headers
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, X-Requested-With');
+  
+  // Handle preflight requests
+  if (req.method === 'OPTIONS') {
+    res.writeHead(204);
+    res.end();
+    return;
+  }
+  
   const parsedUrl = url.parse(req.url);
   const pathname = parsedUrl.pathname;
   
@@ -479,13 +345,10 @@ server.listen(PORT, () => {
 │                                                 │
 │   API endpoints available at:                   │
 │     - GET  /api                                 │
-│     - GET  /api/config                          │
 │     - POST /api/webhook                         │
 │     - GET  /api/schedule                        │
 │     - POST /api/schedule                        │
 │     - POST /api/schedule/cancel                 │
-│                                                 │
-│   Using Cloudflare API: ${process.env.CLOUDFLARE_SCHEDULE_ENDPOINT || 'https://phone-agent.pages.dev/api/schedule'}
 │                                                 │
 │   Press Ctrl+C to stop the server               │
 │                                                 │

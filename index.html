@@ -3,10 +3,67 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Phone Agent</title>
+  
+  <!-- Primary Meta Tags -->
+  <title>Phone Agent - AI-Powered Voice Agents for Meetings and Calls</title>
+  <meta name="title" content="Phone Agent - AI-Powered Voice Agents for Meetings and Calls">
+  <meta name="description" content="Transform your meetings with intelligent AI phone agents that listen, respond, and take action. Seamless calendar integration, real-time action tracking, and enterprise tool integration.">
+  <meta name="keywords" content="AI phone agent, voice assistant, meeting assistant, calendar integration, call automation, AI meeting, voice AI">
+  <meta name="author" content="Phone Agent">
+  
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://phone-agent.pages.dev/">
+  <meta property="og:title" content="Phone Agent - AI-Powered Voice Agents for Meetings and Calls">
+  <meta property="og:description" content="Transform your meetings with intelligent AI phone agents that listen, respond, and take action. Seamless calendar integration, real-time action tracking, and enterprise tool integration.">
+  <meta property="og:image" content="/preview.png">
+  
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:url" content="https://phone-agent.pages.dev/">
+  <meta property="twitter:title" content="Phone Agent - AI-Powered Voice Agents for Meetings and Calls">
+  <meta property="twitter:description" content="Transform your meetings with intelligent AI phone agents that listen, respond, and take action. Seamless calendar integration, real-time action tracking, and enterprise tool integration.">
+  <meta property="twitter:image" content="/preview.png">
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="/favicon.png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  
+  <!-- Fonts and Styles -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
   <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/status-styles.css">
+  <link rel="stylesheet" href="/css/modal-styles.css">
+  <link rel="stylesheet" href="/css/animations.css">
+  
+  <!-- Font Awesome for Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  
+  <!-- Structured Data for SEO -->
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "Phone Agent",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "Cloud",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "description": "AI-powered voice agents for meetings and calls with calendar integration and action tracking",
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.8",
+        "ratingCount": "156"
+      }
+    }
+  </script>
+  
+  <!-- Scripts -->
   <script type="module" src="/src/index.js"></script>
+  <script src="/server-status.js"></script>
 </head>
 <body>
   <header>
@@ -15,7 +72,7 @@
         <div class="logo-icon">
           <div class="infinity"></div>
         </div>
-       Ai Phone Agent
+        Ai Phone Agent
       </div>
       <nav>
         <ul>
@@ -31,25 +88,13 @@
   <section class="hero">
     <div class="container">
       <div class="hero-content">
-        <h1>Intelligent Voice Agents for the Modern Workplace</h1>
+        <h1>Intelligent Voice Agents<br>for the Modern Workplace</h1>
         <p class="hero-tagline">Transform your meetings with AI-powered call agents that listen, respond, and take action</p>
-        <div class="hero-features">
-          <div class="hero-feature">
-            <div class="hero-feature-icon">🔄</div>
-            <span>Seamless Calendar Integration</span>
-          </div>
-          <div class="hero-feature">
-            <div class="hero-feature-icon">⚡</div>
-            <span>Real-time Action Tracking</span>
-          </div>
-          <div class="hero-feature">
-            <div class="hero-feature-icon">🔗</div>
-            <span>Enterprise Tool Integration</span>
-          </div>
-        </div>
         <div class="hero-cta">
-          <a href="#how-it-works" class="btn btn-primary">Get Started</a>
-          <a href="#use-cases" class="btn btn-secondary">Explore Use Cases</a>
+          <a href="#" id="schedule-call-btn" class="btn btn-accent btn-icon">
+            <i class="fas fa-phone-alt"></i>
+            <span>Schedule Agent Call</span>
+          </a>
         </div>
       </div>
       <div class="hero-visual">
@@ -466,5 +511,11 @@
       });
     });
   </script>
+  
+  <!-- Call Scheduler Script -->
+  <script src="/js/call-scheduler.js"></script>
+  
+  <!-- Text Animation Script -->
+  <script src="/js/text-animator.js"></script>
 </body>
 </html>

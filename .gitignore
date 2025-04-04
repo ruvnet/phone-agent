@@ -38,3 +38,5 @@ coverage/
 *.sw?
 .DS_Store
 Thumbs.db
+wrangler.toml
+.dev.vars

@@ -1,0 +1,51 @@
+/* Button icon styles */
+.btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  padding: 8px 16px;
+  border-radius: 8px;
+}
+
+.btn-icon i {
+  font-size: 1rem;
+}
+
+.btn-icon span {
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
+}
+
+/* Accent button style */
+.btn-accent {
+  background: linear-gradient(135deg, #ff6b6b, #ff8e53);
+  color: white;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-accent:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(255, 107, 107, 0.3);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .btn-icon {
+    font-size: 0.8rem;
+    padding: 6px 12px;
+  }
+  
+  .btn-icon i {
+    font-size: 0.9rem;
+  }
+  
+  .btn-icon span {
+    font-size: 0.75rem;
+  }
+  
+  .hero-cta {
+    flex-wrap: wrap;
+  }
+}

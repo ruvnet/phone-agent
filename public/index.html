@@ -33,6 +33,12 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
   <link rel="stylesheet" href="/styles.css">
   <link rel="stylesheet" href="/status-styles.css">
+  <link rel="stylesheet" href="/css/modal-styles.css">
+  <link rel="stylesheet" href="/css/animations.css">
+  <link rel="stylesheet" href="/css/call-status.css">
+  
+  <!-- Font Awesome for Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   
   <!-- Structured Data for SEO -->
   <script type="application/ld+json">
@@ -87,25 +93,13 @@
   <section class="hero">
     <div class="container">
       <div class="hero-content">
-        <h1>Intelligent Voice Agents for the Modern Workplace</h1>
+        <h1>Intelligent Voice Agents<br>for the Modern Workplace</h1>
         <p class="hero-tagline">Transform your meetings with AI-powered call agents that listen, respond, and take action</p>
-        <div class="hero-features">
-          <div class="hero-feature">
-            <div class="hero-feature-icon">🔄</div>
-            <span>Seamless Calendar Integration</span>
-          </div>
-          <div class="hero-feature">
-            <div class="hero-feature-icon">⚡</div>
-            <span>Real-time Action Tracking</span>
-          </div>
-          <div class="hero-feature">
-            <div class="hero-feature-icon">🔗</div>
-            <span>Enterprise Tool Integration</span>
-          </div>
-        </div>
         <div class="hero-cta">
-          <a href="#how-it-works" class="btn btn-primary">Get Started</a>
-          <a href="#use-cases" class="btn btn-secondary">Explore Use Cases</a>
+          <a href="#" id="schedule-call-btn" class="btn btn-accent btn-icon">
+            <i class="fas fa-phone-alt"></i>
+            <span>Schedule Agent Call</span>
+          </a>
         </div>
       </div>
       <div class="hero-visual">
@@ -522,5 +516,11 @@
       });
     });
   </script>
+  
+  <!-- Call Scheduler Script -->
+  <script src="/js/call-scheduler.js"></script>
+  
+  <!-- Text Animation Script -->
+  <script src="/js/text-animator.js"></script>
 </body>
 </html>

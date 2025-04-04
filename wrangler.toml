@@ -2,31 +2,45 @@
 
 name = "phone-agent"
 compatibility_date = "2023-10-30"
+pages_build_output_dir = "public"
 
 # Environment variables
 # These are placeholder values and should be set in the Cloudflare dashboard
 [vars]
 DEBUG_WEBHOOKS = "false"
 STORE_FAILED_PAYLOADS = "true"
+SENDER_EMAIL = "noreply@agentics.org"
+SENDER_NAME = "AI Phone Agent"
+DEFAULT_TIMEZONE = "UTC"
+BLAND_AI_BASE_URL = "https://api.bland.ai"
+MAX_CALL_DURATION_MINUTES = "30"
+DEFAULT_RETRY_COUNT = "3"
 
-# Development environment
-[env.dev.vars]
-# Use this for local development
-# wrangler pages dev --env dev
-
-# Staging environment
-[env.staging.vars]
-# Use this for testing in a non-production environment
-# wrangler pages publish --env staging
+# Preview environment (replaces staging)
+[env.preview.vars]
+DEBUG_WEBHOOKS = "true"
+STORE_FAILED_PAYLOADS = "true"
+SENDER_EMAIL = "noreply@agentics.org"
+SENDER_NAME = "AI Phone Agent"
+DEFAULT_TIMEZONE = "UTC"
+BLAND_AI_BASE_URL = "https://api.bland.ai"
+MAX_CALL_DURATION_MINUTES = "30"
+DEFAULT_RETRY_COUNT = "3"
 
 # Production environment
 [env.production.vars]
-# Use this for the production deployment
-# wrangler pages publish --env production
+DEBUG_WEBHOOKS = "false"
+STORE_FAILED_PAYLOADS = "true"
+SENDER_EMAIL = "noreply@agentics.org"
+SENDER_NAME = "AI Phone Agent"
+DEFAULT_TIMEZONE = "UTC"
+BLAND_AI_BASE_URL = "https://api.bland.ai"
+MAX_CALL_DURATION_MINUTES = "30"
+DEFAULT_RETRY_COUNT = "3"
 
 # Secrets (these need to be set using wrangler secret commands)
-# wrangler secret put WEBHOOK_SIGNING_SECRET --env production
-# wrangler secret put TARGET_WEBHOOK_URL --env production
-# wrangler secret put TARGET_WEBHOOK_AUTH_TOKEN --env production
-# wrangler secret put RESEND_API_KEY --env production
-# wrangler secret put BLAND_AI_API_KEY --env production
+# wrangler secret put WEBHOOK_SIGNING_SECRET
+# wrangler secret put TARGET_WEBHOOK_URL
+# wrangler secret put TARGET_WEBHOOK_AUTH_TOKEN
+# wrangler secret put RESEND_API_KEY
+# wrangler secret put BLAND_AI_API_KEY

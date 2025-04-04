@@ -1,5 +1,5 @@
 import { processWebhook, createWebhookResponse } from '../../src/webhooks/handler';
-import { validateWebhookConfig } from '../../src/config/webhook';
+import { validateWebhookConfig, initWebhookConfig } from '../../src/config/webhook';
 
 /**
  * Handle webhook requests from Resend
@@ -10,6 +10,9 @@ import { validateWebhookConfig } from '../../src/config/webhook';
  * @returns {Response} The response
  */
 export async function onRequest(request, env, ctx) {
+  // Initialize webhook config with environment variables
+  initWebhookConfig(env);
+  
   // Only allow POST requests for webhooks
   if (request.method !== 'POST') {
     return new Response('Method not allowed', { status: 405 });
